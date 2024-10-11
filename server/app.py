@@ -29,21 +29,23 @@ def index_articles():
 
 @app.route('/articles/<int:id>')
 def show_article(id):
-    session['page_views'] = session.get('page_views',0)#checks if session['page_views']  exists,it it does it uses that value ;if not it sets it to 0
-    session['page_views']+=1   
+    session['page_views']=session.get('page_views',0)#check the pagesviews if they exist if yes use the value of pageviews else just initiate it to 0
 
-    if session['page_views'] >3:
-        return jsonify({'message': 'Maximum pageview limit reached'}),401
+    session['page_views'] +=1
     
 
-    article=Article.query.filter_by(id=id).first()
-    if article:
-        return jsonify(article.to_dict()),200
-    else:
+    if session['page_views']>3:
         return jsonify({
-            'message':'Article not found',
-        }),404
+           'message': 'Maximum pageview limit reached'
+        }),401
     
+    articles=Article.query.filter_by(id=id).first()
+
+    if articles:
+        return jsonify(articles.to_dict()),200
+    else:
+        return jsonify({"message":"Article not found"}),400
+   
 
    
 if __name__ == '__main__':
